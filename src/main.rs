@@ -10,6 +10,8 @@ struct Args {
     start: u32,
     #[arg(short = 'L')]
     launch_ssh: bool,
+    #[arg(short = 'u')]
+    user: Option<String>,
 }
 
 fn main() {
@@ -35,8 +37,15 @@ fn main() {
                     "\nConnecting to {}...\nYou may now enter your SSH credentials.\n",
                     hostname.blue()
                 );
+
+                let target = if let Some(user) = &args.user {
+                    format!("{}@{}", user, hostname)
+                } else {
+                    hostname.clone()
+                };
+
                 Command::new("ssh")
-                    .arg(&hostname)
+                    .arg(target)
                     .status()
                     .expect("Failed to launch ssh");
             }
